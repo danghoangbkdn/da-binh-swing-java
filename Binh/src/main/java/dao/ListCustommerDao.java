@@ -3,12 +3,11 @@ package dao;
 import java.util.List;
 
 import entity.Custommer;
-import entity.ServiceCharge;
 
 public interface ListCustommerDao {
-	List<Custommer> getListCustommer();
-
-	List<ServiceCharge> getListServiceCharge();
+	List<Custommer> getListCustommers();
 
 	void setStatusAndDate(String id, String status, String date);
+
+	Custommer getCustommer(String id);
 }

@@ -1,8 +1,13 @@
 package entity;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
-public class Custommer {
+@SuppressWarnings("serial")
+public class Custommer implements Serializable {
 	private String id;
 	private String fullname;
 	private String address;
@@ -11,13 +16,14 @@ public class Custommer {
 	private String NgayHH;
 	private String status;
 	private String NgayTP;
-	private String idPDV;
+	private String tenPDV;
+	private Float price;
 
 	public Custommer() {
 	}
 
 	public Custommer(String id, String fullname, String numberPhone, String address, String NgaySD, String NgayHH,
-			Boolean status, String NgayTP, String idPDV) {
+			Boolean status, String NgayTP, String idPDV, String tenPDV, Float price) {
 		this.id = id;
 		this.fullname = fullname;
 		this.address = address;
@@ -25,8 +31,9 @@ public class Custommer {
 		this.NgaySD = NgaySD;
 		this.NgayHH = NgayHH;
 		this.status = status ? "Đã thu" : "Chưa thu";
-		this.setNgayTP(NgayTP);
-		this.setIdPDV(idPDV);
+		this.NgayTP = NgayTP;
+		this.tenPDV = tenPDV;
+		this.price = price;
 	}
 
 	public String getId() {
@@ -89,16 +96,25 @@ public class Custommer {
 		return NgayTP;
 	}
 
-	public void setNgayTP(String ngayTP) {
-		NgayTP = ngayTP;
+	public void setNgayTP(Date ngayTP) {
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy\n  		: HH:mm:ss");
+		this.NgayTP = df.format(ngayTP);
 	}
 
-	public String getIdPDV() {
-		return idPDV;
+	public String getTenPDV() {
+		return tenPDV;
 	}
 
-	public void setIdPDV(String idPDV) {
-		this.idPDV = idPDV;
+	public void setTenPDV(String tenPDV) {
+		this.tenPDV = tenPDV;
+	}
+
+	public Float getPrice() {
+		return price;
+	}
+
+	public void setPrice(Float price) {
+		this.price = price;
 	}
 
 	@Override
@@ -122,6 +138,6 @@ public class Custommer {
 	public String toString() {
 		return "Custommer [id=" + id + ", fullname=" + fullname + ", address=" + address + ", numberPhone="
 				+ numberPhone + ", NgaySD=" + NgaySD + ", NgayHH=" + NgayHH + ", status=" + status + ", NgayTP="
-				+ NgayTP + ", idPDV=" + idPDV + "]";
+				+ NgayTP + ", tenPDV=" + tenPDV + ", price=" + price + "]";
 	}
 }

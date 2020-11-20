@@ -7,6 +7,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,8 +19,9 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
-import controller.ListCustommerController;
-import controller.ListCustommerControllerImpl;
+import entity.Custommer;
+import entity.Request;
+import tcp_ip.ClientHandling;
 
 import static utils.CompUtils.*;
 
@@ -35,10 +38,14 @@ public class UIMain extends JFrame {
 	private DefaultTableModel tbmdResult;
 	private String[] columnNames;
 
-	private final ListCustommerController controller;
+	private Object[][] custommerObj;
+	private List<Custommer> listCustommers;
+	private final ClientHandling client;
 
-	public UIMain() {
-		controller = new ListCustommerControllerImpl();
+	public UIMain(ClientHandling client) {
+		this.client = client;
+		custommerObj = client.getCustommerObj(new Request("getObj"));
+		listCustommers = client.getListCustommers(new Request("getList"));
 
 		initComponents();
 		initEvents();
@@ -107,9 +114,7 @@ public class UIMain extends JFrame {
 	}
 
 	private void initEvents() {
-
 		tfSearch.addKeyListener(new KeyAdapter() {
-
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					convert();
@@ -117,21 +122,18 @@ public class UIMain extends JFrame {
 			}
 		});
 
-		tbResult.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				String idCostommer = tbResult.getValueAt(tbResult.getSelectedRow(), 0).toString();
-				new UIInformation(idCostommer).setVisible(true);
-				tbResult.setValueAt(controller.getCustommer(idCostommer), tbResult.getSelectedRow(), 4);
-			}
-		});
-
 		btSearch.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mousePressed(MouseEvent e) {
 				convert();
+			}
+		});
+
+		tbResult.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				String id = tbResult.getValueAt(tbResult.getSelectedRow(), 0).toString();
+				new UIInformation(search(id), client, tbResult, custommerObj, listCustommers).setVisible(true);
 			}
 		});
 	}
@@ -141,10 +143,10 @@ public class UIMain extends JFrame {
 
 		if (input.isEmpty()) {
 			return;
-		} else if (controller.getInfor(input).equals("")) {
+		} else if (search(input) == null) {
 			lbNot.setVisible(true);
 		} else {
-			new UIInformation(input).setVisible(true);
+			new UIInformation(search(input), client, tbResult, custommerObj, listCustommers).setVisible(true);
 			lbNot.setVisible(false);
 		}
 	}
@@ -162,8 +164,17 @@ public class UIMain extends JFrame {
 	}
 
 	private void setTableRows() {
-		for (Object[] cus : controller.getListCustommer()) {
+		for (Object[] cus : custommerObj) {
 			tbmdResult.addRow(new Object[] { cus[0], cus[1], cus[2], cus[3], cus[4] });
 		}
+	}
+
+	private Custommer search(String id) {
+		List<Custommer> custommers = listCustommers.stream().filter(s -> s.getId().equals(id))
+				.collect(Collectors.toList());
+		if (!custommers.isEmpty()) {
+			return custommers.get(0);
+		}
+		return null;
 	}
 }

@@ -5,14 +5,14 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.Socket;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import connection.ConnectionManager;
-import connection.ConnectionManagerImpl;
+import tcp_ip.ClientHandling;
 
 import static utils.CompUtils.*;
 
@@ -24,10 +24,13 @@ public class UIStart extends JFrame {
 	private JButton btNot;
 
 	private Container con = getContentPane();
-	private final ConnectionManager conn;
+	private final String status;
+	private final ClientHandling client;
 
-	public UIStart() {
-		conn = new ConnectionManagerImpl();
+	public UIStart(String status, Socket socket) {
+		this.status = status;
+		client = new ClientHandling(socket);
+		client.run();
 
 		initComponent();
 		initEvents();
@@ -67,7 +70,7 @@ public class UIStart extends JFrame {
 
 	private void initEvents() {
 		lbNot.setForeground(Color.WHITE);
-		lbNot.setText(getConnection());
+		lbNot.setText(status);
 		lbNot.setBounds((400 - getPreWidth(lbNot)) / 2, 170 - getPreHeight(lbTitle), getPreWidth(lbNot),
 				getPreHeight(lbNot));
 
@@ -76,8 +79,8 @@ public class UIStart extends JFrame {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (conn != null) {
-					new UIMain().setVisible(true);
+				if (status.equals("Kết nối thành công!")) {
+					new UIMain(client).setVisible(true);
 					setVisible(isUndecorated());
 				} else {
 					System.exit(0);
@@ -85,12 +88,5 @@ public class UIStart extends JFrame {
 			}
 		});
 
-	}
-
-	private String getConnection() {
-		if (conn != null) {
-			return "Kết nối thành công!";
-		}
-		return "Kết nối thất bại!";
 	}
 }

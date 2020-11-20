@@ -1,13 +1,15 @@
 package controller;
 
+import java.util.List;
+
+import entity.Custommer;
+
 public interface ListCustommerController {
-	Object[][] getListCustommer();
+	Object[][] getCustommerObj();
 
-	String getInfor(String idKH);
+	List<Custommer> getListCustommers();
 
-	void setStatus(String idKH);
+	Custommer setStatus(Custommer custommer);
 
-	String getCustommer(String id);
-
-	boolean checkStatusCustommer(String id);
+	Custommer getCustommer(String id);
 }

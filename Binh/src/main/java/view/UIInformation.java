@@ -5,15 +5,17 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
-import controller.ListCustommerController;
-import controller.ListCustommerControllerImpl;
+import entity.Custommer;
+import tcp_ip.ClientHandling;
 
 @SuppressWarnings("serial")
 public class UIInformation extends JFrame {
@@ -23,12 +25,20 @@ public class UIInformation extends JFrame {
 	private JButton btRecorded;
 	private JButton btCancel;
 
-	private final String idCustommer;
-	private final ListCustommerController controller;
+	private JTable tbResult;
+	private Object[][] custommerObj;
+	private List<Custommer> listCustommers;
 
-	public UIInformation(String idCustommer) {
-		this.idCustommer = idCustommer;
-		controller = new ListCustommerControllerImpl();
+	private final Custommer custommer;
+	private final ClientHandling client;
+
+	public UIInformation(Custommer custommer, ClientHandling client, JTable tbResult, Object[][] custommerObj,
+			List<Custommer> listCustommers) {
+		this.custommer = custommer;
+		this.client = client;
+		this.tbResult = tbResult;
+		this.custommerObj = custommerObj;
+		this.listCustommers = listCustommers;
 
 		initComponents();
 		initEvents();
@@ -72,23 +82,35 @@ public class UIInformation extends JFrame {
 	}
 
 	private void initEvents() {
-		taResult.setText(controller.getInfor(idCustommer));
+		taResult.setText(showInfor());
 
 		btRecorded.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mousePressed(MouseEvent e) {
-				new UINotification(idCustommer).setVisible(true);
+				new UINotification(custommer, client, tbResult, custommerObj, listCustommers).setVisible(true);
 			}
 		});
 
 		btCancel.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// TODO
 				setVisible(isUndecorated());
 			}
 		});
+	}
+
+	private String showInfor() {
+		String result = "";
+		int index = 1;
+		result = "       THÔNG TIN KHÁCH HÀNG:\n\t" + index++ + ". Mã KH: " + custommer.getId() + "\n\t" + index++
+				+ ". Tên KH: " + custommer.getFullname() + "\n\t" + index++ + ". Ngày SD: " + custommer.getNgaySD()
+				+ "\n\t" + index++ + ". Ngày HH: " + custommer.getNgayHH() + "\n       THÔNG TIN THANH TOÁN:\n\t"
+				+ index++ + ". Trạng Thái: " + custommer.getStatus()
+				+ ((custommer.getNgayTP() != null) ? ("\n\t" + index++ + ". Ngày Thu Phí: " + custommer.getNgayTP())
+						: "")
+				+ "\n       THÔNG TIN DỊCH VỤ:\n\t" + index++ + ". Mã PDV: " + custommer.getId() + "\n\t" + index++
+				+ ". Tên Loại DV: " + custommer.getFullname() + "\n\t" + index++ + ". Tiền Phí DV: "
+				+ custommer.getPrice();
+		return result;
 	}
 }

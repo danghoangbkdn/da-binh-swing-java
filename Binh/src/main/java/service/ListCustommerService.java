@@ -1,13 +1,13 @@
 package service;
 
+import java.util.List;
+
+import entity.Custommer;
+
 public interface ListCustommerService {
-	Object[][] getListCustommer();
+	List<Custommer> getListCustommers();
 
-	String getInfor(String idKH);
+	Custommer setStatus(Custommer custommer);
 
-	void setStatus(String idKH);
-
-	String getCustommer(String id);
-
-	boolean checkStatusCustommer(String id);
+	Custommer getCustommer(String id);
 }
